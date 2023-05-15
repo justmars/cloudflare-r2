@@ -1,8 +1,8 @@
-site_name: start-code Docs
-site_description: Boilerplate python
+site_name: cloudflare-r2 Docs
+site_description: Wrapper around commonly used boto3 functions in Cloudflare R2 API.
 site_url: https://mv3.dev
 site_author: Marcelino Veloso III
-repo_url: https://github.com/justmars/start-django
+repo_url: https://github.com/justmars/cloudflare-r2
 dev_addr: '127.0.0.1:8001'
 theme:
   name: "material"
