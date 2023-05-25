@@ -51,7 +51,7 @@ class CloudflareR2(CF):
 
     def get_bucket(self, bucket_name: str):
         """Get an R2 bucket instance."""
-        return self.resource.Bucket(bucket_name)
+        return self.resource.Bucket(bucket_name)  # type: ignore
 
 
 class CloudflareR2Bucket(CloudflareR2):
@@ -92,6 +92,21 @@ class CloudflareR2Bucket(CloudflareR2):
         """  # noqa: E501
         try:
             return self.client.get_object(Bucket=self.name, Key=key, *args, **kwargs)
+        except Exception:
+            return None
+
+    def put(self, key: str, *args, **kwargs) -> dict | None:
+        """Assumes the key prefix exists in the bucket. See helper
+        for [boto3 put_object](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3/client/put_object.html)
+
+        Args:
+            key (str): Should exist in the bucket.
+
+        Returns:
+            dict | None: Returns `None` if not found.
+        """  # noqa: E501
+        try:
+            return self.client.put_object(Bucket=self.name, Key=key, *args, **kwargs)
         except Exception:
             return None
 
