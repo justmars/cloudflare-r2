@@ -28,10 +28,12 @@ class CloudflareR2(CF):
 
     """  # noqa: E501
 
-    region: str = Field(default="apac", repr=True, env="CF_R2_REGION")
-    access_key_id: str = Field(default="ABC", repr=False, env="R2_ACCESS_KEY_ID")
+    region: str = Field(default="apac", repr=True, validation_alias="CF_R2_REGION")
+    access_key_id: str = Field(
+        default="ABC", repr=False, validation_alias="R2_ACCESS_KEY_ID"
+    )  # noqa: E501
     secret_access_key: str = Field(
-        default="XYZ", repr=False, env="R2_SECRET_ACCESS_KEY"
+        default="XYZ", repr=False, validation_alias="R2_SECRET_ACCESS_KEY"
     )
 
     @property
