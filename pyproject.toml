@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "cloudflare-r2"
 description = "Wrapper around commonly used boto3 functions in Cloudflare R2 API."
-version = "0.0.3"
+version = "0.0.4"
 authors = ["Marcelino G. Veloso III <contact@mv3.dev>"]
 readme = "README.md"
 homepage = "https://mv3.dev"
