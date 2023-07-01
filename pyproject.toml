@@ -16,7 +16,7 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.11"
-start-cloudflare = "^0.0.2"
+start-cloudflare = "^0.0.3"
 boto3 = "^1.26"
 
 [tool.poetry.group.dev.dependencies] # latest as of June 2023
