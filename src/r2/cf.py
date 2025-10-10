@@ -194,13 +194,13 @@ class CloudflareR2Bucket(CloudflareR2):
         with open(local_file, "wb") as write_file:
             return self.bucket.download_fileobj(key, write_file)
 
-    def get_root_prefixes(self):
+    def get_root_prefixes(self) -> list[str]:
         """See adapted recipe from boto3 re: top-level [prefixes](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html#list-top-level-common-prefixes-in-amazon-s3-bucket).
 
         Returns:
             list[str]: Matching prefixes in the root of the bucket.
         """  # noqa: E501
-        _objs = []
+        _objs: list[str] = []
         paginator = self.client.get_paginator("list_objects")
         result = paginator.paginate(Bucket=self.name, Delimiter="/")
         for prefix in result.search("CommonPrefixes"):
