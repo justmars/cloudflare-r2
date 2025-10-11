@@ -37,7 +37,7 @@ class CloudflareR2(CF):
     )
 
     @property
-    def endpoint_url(self):
+    def endpoint_url(self) -> str:
         return f"https://{self.account_id}.r2.cloudflarestorage.com"
 
     @property
@@ -119,6 +119,57 @@ class CloudflareR2Bucket(CloudflareR2):
         See details in [boto3 list-objects-v2 API docs](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3/client/list_objects_v2.html#list-objects-v2)
         """  # noqa: E501
         return self.client.list_objects_v2(Bucket=self.name, *args, **kwargs)
+
+    def delete_bucket(self):
+        self.client.delete_bucket(Bucket=self.name, ExpectedBucketOwner=self.account_id)
+        print(f"🗑️ Deleted {self.name}")
+
+    def empty_bucket(self):
+        """
+        Continuously fetch and delete objects from Cloudflare R2 (S3-compatible) bucket
+        until it's empty.
+        """
+        total_deleted = 0
+        batch_index = 1
+
+        while True:
+            data = self.fetch()
+            contents = data.get("Contents", [])
+            if not contents:
+                print("✅ Bucket is empty.")
+                break
+
+            # Prepare delete list (S3 delete_objects expects just Keys)
+            objects_to_delete = [{"Key": d["Key"]} for d in contents]
+
+            # Log first and last items for traceability
+            first_key = contents[0]["Key"]
+            last_key = contents[-1]["Key"]
+
+            print(
+                f"\n🔄 Batch {batch_index}: preparing to delete {len(contents)} objects"
+            )
+            print(f"   ↳ First key: {first_key}")
+            print(f"   ↳ Last key:  {last_key}")
+
+            # Perform batch delete
+            res = self.client.delete_objects(
+                Bucket=self.name, Delete={"Objects": objects_to_delete}
+            )
+
+            deleted_count = len(res.get("Deleted", []))
+            total_deleted += deleted_count
+
+            print(f"🗑️ Deleted {deleted_count} objects (total: {total_deleted})")
+
+            # Optional: Stop if fewer than 1000 results — means no more pages
+            if len(contents) < 1000:
+                print("✅ Finished deleting all available objects.")
+                break
+
+            batch_index += 1
+
+        print(f"✅ Total deleted: {total_deleted}")
 
     def all_items(self) -> list[dict] | None:
         """Using pagination conventions from s3 and r2, get all prefixes found in
