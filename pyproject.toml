@@ -5,8 +5,10 @@ description = "Wrapper around commonly used boto3 functions in Cloudflare R2 API
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
-    "start-cloudflare >= 0.0.9",
     "boto3 >= 1.42",
+    "click >= 8.3.3",
+    "pydantic-settings >= 2.14",
+    "python-dotenv >= 1.2.2",
     "rich >= 15.0",
 ]
 
@@ -26,7 +28,7 @@ r2 = "r2:cli"
 [tool.pytest.ini_options]
 minversion = "9.0"
 addopts = "-ra -q -vv --cov --doctest-modules"
-testpaths = ["tests", "src/cloudflare_r2"]
+testpaths = ["tests", "src/r2"]
 
 [tool.ruff]
 line-length = 88

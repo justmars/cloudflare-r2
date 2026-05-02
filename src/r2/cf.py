@@ -3,53 +3,36 @@ from pathlib import Path
 
 import boto3
 from pydantic import Field
-from start_cloudflare import CF
+
+from .settings import R2Settings
 
 
-class CloudflareR2(CF):
+class CloudflareR2(R2Settings):
     """
     Add secrets to .env file:
 
     Field in .env | Cloudflare API Credential | Where credential found
     :--|:--:|:--
     `CF_ACCT_ID` | Account ID | `https://dash.cloudflare.com/<acct_id>/r2`
-    `CF_R2_REGION` | Default Region: `apac` | See [options](https://developers.cloudflare.com/r2/learning/data-location/#available-hints)
+    `R2_REGION` | Default Region: `auto` | Cloudflare's S3-compatible default region
     `R2_ACCESS_KEY_ID` | Key | When R2 Token created in `https://dash.cloudflare.com/<acct_id>/r2/overview/api-tokens`
     `R2_SECRET_ACCESS_KEY` | Secret | When R2 Token created in `https://dash.cloudflare.com/<acct_id>/r2/overview/api-tokens`
 
     Examples:
         >>> import os
         >>> os.environ['CF_ACCT_ID'] = "ACT"
-        >>> os.environ['R2_ACCESS_KEY_ID'] = "ABC"
-        >>> os.environ['R2_SECRET_ACCESS_KEY'] = "XYZ"
+        >>> os.environ['R2_ACCESS_KEY_ID'] = "KEY"
+        >>> os.environ['R2_SECRET_ACCESS_KEY'] = "SECRET"
         >>> r2 = CloudflareR2()
         >>> type(r2.resource)
         <class 'boto3.resources.factory.s3.ServiceResource'>
 
     """  # noqa: E501
 
-    region: str = Field(default="apac", repr=True, validation_alias="CF_R2_REGION")
-    access_key_id: str = Field(
-        default="ABC", repr=False, validation_alias="R2_ACCESS_KEY_ID"
-    )  # noqa: E501
-    secret_access_key: str = Field(
-        default="XYZ", repr=False, validation_alias="R2_SECRET_ACCESS_KEY"
-    )
-
-    @property
-    def endpoint_url(self) -> str:
-        return f"https://{self.account_id}.r2.cloudflarestorage.com"
-
     @property
     def resource(self):
         """Access to buckets via instance, e.g. `r2.resource.Bucket('<name>')`"""
-        return boto3.resource(
-            "s3",
-            endpoint_url=self.endpoint_url,
-            aws_access_key_id=self.access_key_id,
-            aws_secret_access_key=self.secret_access_key,
-            region_name=self.region,
-        )
+        return boto3.resource("s3", **self.boto3_kwargs())
 
     def get_bucket(self, bucket_name: str):
         """Get an R2 bucket instance."""
@@ -65,14 +48,18 @@ class CloudflareR2Bucket(CloudflareR2):
     Examples:
         >>> import os
         >>> os.environ['CF_ACCT_ID'] = "ACT"
-        >>> os.environ['R2_ACCESS_KEY_ID'] = "ABC"
-        >>> os.environ['R2_SECRET_ACCESS_KEY'] = "XYZ"
+        >>> os.environ['R2_ACCESS_KEY_ID'] = "KEY"
+        >>> os.environ['R2_SECRET_ACCESS_KEY'] = "SECRET"
         >>> obj = CloudflareR2Bucket(name='test')
         >>> type(obj.bucket)
         <class 'boto3.resources.factory.s3.Bucket'>
     """  # noqa: E501
 
-    name: str
+    name: str = Field(default="", description="R2 bucket name")
+
+    def model_post_init(self, __context) -> None:
+        if not self.bucket_name:
+            self.bucket_name = self.name
 
     @property
     def bucket(self):
