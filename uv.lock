@@ -73,7 +73,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "boto3", specifier = ">=1.43" },
+    { name = "boto3", specifier = ">=1.43.2" },
     { name = "click", specifier = ">=8.3.3" },
     { name = "pydantic-settings", specifier = ">=2.14" },
     { name = "python-dotenv", specifier = ">=1.2.2" },
