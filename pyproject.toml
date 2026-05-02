@@ -5,7 +5,7 @@ description = "Wrapper around commonly used boto3 functions in Cloudflare R2 API
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
-    "boto3 >= 1.42",
+    "boto3 >= 1.43",
     "click >= 8.3.3",
     "pydantic-settings >= 2.14",
     "python-dotenv >= 1.2.2",
