@@ -1,32 +1,30 @@
 [project]
 name = "cloudflare-r2"
-version = "0.0.5"
+version = "0.0.6"
 description = "Wrapper around commonly used boto3 functions in Cloudflare R2 API."
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.14"
 dependencies = [
-    "start-cloudflare >= 0.0.7",
-    "boto3 >= 1.40.49",
-    "rich >= 14.2.0",
+    "start-cloudflare >= 0.0.9",
+    "boto3 >= 1.42",
+    "rich >= 15.0",
 ]
 
 [dependency-groups]
 dev = [
-    "ipykernel>=6.30.1",
     # testing
-    "pytest >= 8.4",
+    "pytest >= 9.0",
     "pytest-cov >= 7.0",
     # docs
-    "mkdocs >= 1.6.1",
-    "mkdocs-material >= 9.6.20",
-    "mkdocstrings[python] >= 0.30.1",
+    "zensical>=0.0.39",
+    "mkdocstrings-python>=2.0.3",
 ]
 
 [project.scripts]
 r2 = "r2:cli"
 
 [tool.pytest.ini_options]
-minversion = "8.4"
+minversion = "9.0"
 addopts = "-ra -q -vv --cov --doctest-modules"
 testpaths = ["tests", "src/cloudflare_r2"]
 
