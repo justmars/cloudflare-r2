@@ -16,7 +16,11 @@ def mock_boto_resource():
 def test_get_bucket(mock_boto_resource):
     mock_bucket = MagicMock()
     mock_boto_resource.return_value.Bucket.return_value = mock_bucket
-    r2 = CloudflareR2(account_id="ACT")
+    r2 = CloudflareR2(
+        account_id="ACT",
+        access_key_id="KEY",
+        secret_access_key="SECRET",
+    )
     bucket = r2.get_bucket("test-bucket")
     assert bucket == mock_bucket
 
@@ -32,7 +36,12 @@ def mock_bucket_obj():
 def test_bucket_client(mock_boto_resource, mock_bucket_obj):
     mock_bucket, mock_client = mock_bucket_obj
     mock_boto_resource.return_value.Bucket.return_value = mock_bucket
-    b = CloudflareR2Bucket(account_id="ACT", name="test-bucket")
+    b = CloudflareR2Bucket(
+        account_id="ACT",
+        access_key_id="KEY",
+        secret_access_key="SECRET",
+        name="test-bucket",
+    )
     assert b.client is mock_client
 
 
@@ -41,7 +50,12 @@ def test_get_object_success(mock_boto_resource, mock_bucket_obj):
     mock_boto_resource.return_value.Bucket.return_value = mock_bucket
     mock_client.get_object.return_value = {"Body": "data"}
 
-    b = CloudflareR2Bucket(account_id="ACT", name="bucket")
+    b = CloudflareR2Bucket(
+        account_id="ACT",
+        access_key_id="KEY",
+        secret_access_key="SECRET",
+        name="bucket",
+    )
     result = b.get("some/key.txt")
     assert result == {"Body": "data"}
     mock_client.get_object.assert_called_once_with(Bucket="bucket", Key="some/key.txt")
@@ -52,7 +66,12 @@ def test_get_object_failure(mock_boto_resource, mock_bucket_obj):
     mock_boto_resource.return_value.Bucket.return_value = mock_bucket
     mock_client.get_object.side_effect = Exception("Not found")
 
-    b = CloudflareR2Bucket(account_id="ACT", name="bucket")
+    b = CloudflareR2Bucket(
+        account_id="ACT",
+        access_key_id="KEY",
+        secret_access_key="SECRET",
+        name="bucket",
+    )
     result = b.get("missing.txt")
     assert result is None
 
@@ -72,7 +91,12 @@ def test_upload_and_download(tmp_path, mock_boto_resource, mock_bucket_obj):
     mock_bucket, _ = mock_bucket_obj
     mock_boto_resource.return_value.Bucket.return_value = mock_bucket
 
-    b = CloudflareR2Bucket(account_id="ACT", name="bucket")
+    b = CloudflareR2Bucket(
+        account_id="ACT",
+        access_key_id="KEY",
+        secret_access_key="SECRET",
+        name="bucket",
+    )
 
     # Create a temporary file to upload
     test_file = tmp_path / "file.txt"
